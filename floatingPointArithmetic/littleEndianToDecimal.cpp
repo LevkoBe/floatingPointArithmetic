@@ -18,13 +18,13 @@ void computeDecimalRepresentationOf(uint32_t number) {
 	uint32_t bigEndian = 0;
 	for (int i = 0; i < 4; i++) bigEndian |= bytes[i] << ((3 - i) * 8);
 
-	// in case it's required to know how converting from big endian to decimal works:
+	// in case it's required to know/show how converting from big endian to decimal works:
 	// the formula is: result = bits[0] * 2^31 + bits[1] * 2^30 + ... + bits[31] * 2^0
 	std::cout << "Decimal: " << bigEndian << "\n\n";
 }
 
-//int main() {
-//	computeDecimalRepresentationOf(0b00111111000110011001100110011010);
-//	computeDecimalRepresentationOf(0b01000010111101110011100110010011);
-//	computeDecimalRepresentationOf(0b11000011010111101001110011001010);
-//}
+void task6() {
+	computeDecimalRepresentationOf(0b00111111000110011001100110011010);
+	computeDecimalRepresentationOf(0b01000010111101110011100110010011);
+	computeDecimalRepresentationOf(0b11000011010111101001110011001010);
+}
