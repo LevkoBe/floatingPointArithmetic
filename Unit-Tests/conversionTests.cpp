@@ -44,6 +44,7 @@ TEST(ConversionTests, DoubleToBytesNaN)
     EXPECT_TRUE(std::isnan(unbit));
 }
 
+// for me it took 4 minutes to run this test
 TEST(ConversionTests, BruteForceCheck)
 {
     uint32_t nu = 1;
