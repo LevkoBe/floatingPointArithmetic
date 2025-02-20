@@ -1,7 +1,6 @@
 #include <iostream>
 #include <bit>
-#include <iomanip>
-#include <bitset>
+#include <algorithm> // for bruteforce check
 
 // Stage 1: to and fro
 
@@ -140,17 +139,46 @@ int fpclassify(T number) {
 	else throw std::runtime_error("Unknown floating point type");
 }
 
-void bruteforceCheck() {
-    uint32_t nu = 1;
-    //uint64_t nu = 1;
-    float nuf;
-    while (nu != 0) {
-        nuf = toFloat(nu);
-        //if (isFinite(nuf) != std::isfinite(nuf)) std::cout << nuf << std::endl;
-        //if (isInfinity(nuf) != std::isinf(nuf)) std::cout << nuf << std::endl;
-        if (fpclassify(nuf) != std::fpclassify(nuf)) std::cout << nuf << std::endl;
-        nu++;
+// Stage 3
+
+float abso(float number) {
+    return toBytes(number) & 0x7FFFFFFF;
+}
+
+double abso(double number) {
+    return toBytes(number) & 0x7FFFFFFFFFFFFFFF;
+}
+
+template <typename T>
+// the dunction assumes that the input isFinite
+T min(T left, T right) {
+    bool signedLeft = isSigned(left);
+
+    if (signedLeft != isSigned(right)) {
+        if (signedLeft) return left;
+        else return right;
     }
+    if ((toBytes(left) << 1) < (toBytes(right) << 1)) {
+        if (signedLeft) return right;
+        else return left;
+    }
+    if (signedLeft) return left;
+    else return right;
+}
+
+template <typename T>
+// the dunction assumes that the input isFinite
+T max(T left, T right) {
+    if (min(left, right) == right) return left;
+    return right;
+}
+
+template <typename T>
+// the dunction assumes that the input isFinite
+T clamp(T value, T lower, T higher) {
+    if (min(value, lower) == value) return lower;
+    if (min(value, higher) == higher) return higher;
+    return value;
 }
 
 void checkStage1() {
@@ -161,6 +189,20 @@ void checkStage1() {
     checkConversion(23423.3);
     checkConversion(-2.34234243234);
     checkConversion(-0.0);
+}
+
+void bruteforceCheck() {
+    uint32_t nu = 1;
+    //uint64_t nu = 1;
+    float nuf;
+    while (nu != 0) {
+        nuf = toFloat(nu);
+        //if (isFinite(nuf) != std::isfinite(nuf)) std::cout << nuf << std::endl;
+        //if (isInfinity(nuf) != std::isinf(nuf)) std::cout << nuf << std::endl;
+        //if (fpclassify(nuf) != std::fpclassify(nuf)) std::cout << nuf << std::endl;
+        if (clamp(nuf, 23.23f, 2343.23423f) != std::clamp(nuf, 23.23f, 2343.23423f)) std::cout << nuf << std::endl;
+        nu++;
+    }
 }
 
 int main()
