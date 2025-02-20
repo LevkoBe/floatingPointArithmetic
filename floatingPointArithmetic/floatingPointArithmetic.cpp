@@ -150,35 +150,74 @@ double abso(double number) {
 }
 
 template <typename T>
-// the dunction assumes that the input isFinite
-T min(T left, T right) {
+// the function assumes that the input isFinite
+T lessThan(T left, T right) {
     bool signedLeft = isSigned(left);
+	auto leftBitsShifted = toBytes(left) << 1;
+	auto rightBitsShifted = toBytes(right) << 1;
 
     if (signedLeft != isSigned(right)) {
-        if (signedLeft) return left;
-        else return right;
+        if (signedLeft) return true;
+        else return false;
     }
-    if ((toBytes(left) << 1) < (toBytes(right) << 1)) {
-        if (signedLeft) return right;
-        else return left;
+    if (leftBitsShifted < rightBitsShifted) {
+        if (signedLeft) return false;
+        else return true;
     }
-    if (signedLeft) return left;
-    else return right;
+    if (signedLeft && (rightBitsShifted < leftBitsShifted)) return true;
+    else return false;
 }
 
 template <typename T>
-// the dunction assumes that the input isFinite
+// the function assumes that the input isFinite
+T min(T left, T right) {
+	if (lessThan(left, right)) return left;
+	return right;
+}
+
+template <typename T>
+// the function assumes that the input isFinite
 T max(T left, T right) {
-    if (min(left, right) == right) return left;
-    return right;
+	if (lessThan(left, right)) return right;
+	return left;
 }
 
 template <typename T>
-// the dunction assumes that the input isFinite
+// the function assumes that the input isFinite
 T clamp(T value, T lower, T higher) {
     if (min(value, lower) == value) return lower;
     if (min(value, higher) == higher) return higher;
     return value;
+}
+
+template <typename T>
+bool equalWithPrecision(T left, T right, T precision = FLT_EPSILON) {
+	return lessThan(abso(left - right), precision * max(left, right));
+}
+
+template <typename T>
+bool equalWithULPs(T left, T right, int ULPs = 4) {
+	return abso(toBytes(left) - toBytes(right)) <= ULPs;
+}
+
+template <typename T>
+// I assume that "with precision" means that the difference between the two numbers is greater than the precision
+bool lessThanWithPrecision(T left, T right, T precision = FLT_EPSILON) {
+	return lessThan(left + precision, right);
+}
+template <typename T>
+bool lessThanWithULPs(T left, T right, int ULPs = 4) {
+    return lessThan(left, right) && !equalWithULPs(left, right);
+}
+
+template <typename T>
+bool greaterThanWithPrecision(T left, T right, T precision = FLT_EPSILON) {
+	return lessThan(right + precision, left);
+}
+
+template <typename T>
+bool greaterThanWithULPs(T left, T right, int ULPs = 4) {
+	return lessThan(right, left) && !equalWithULPs(left, right);
 }
 
 void checkStage1() {
@@ -200,7 +239,8 @@ void bruteforceCheck() {
         //if (isFinite(nuf) != std::isfinite(nuf)) std::cout << nuf << std::endl;
         //if (isInfinity(nuf) != std::isinf(nuf)) std::cout << nuf << std::endl;
         //if (fpclassify(nuf) != std::fpclassify(nuf)) std::cout << nuf << std::endl;
-        if (clamp(nuf, 23.23f, 2343.23423f) != std::clamp(nuf, 23.23f, 2343.23423f)) std::cout << nuf << std::endl;
+        //if (clamp(nuf, 23.23f, 2343.23423f) != std::clamp(nuf, 23.23f, 2343.23423f)) std::cout << nuf << std::endl;
+        if (lessThan(nuf, nuf + FLT_EPSILON) != (nuf < (nuf + FLT_EPSILON))) std::cout << nuf << std::endl;
         nu++;
     }
 }
