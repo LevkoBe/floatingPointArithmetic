@@ -9,7 +9,7 @@ bool isFinite(float number) {
 
 bool isFinite(double number) {
     // 0111 1111 1111 0000 ... (+12)
-    uint32_t mask = 0x7FF0000000000000;
+    uint64_t mask = 0x7FF0000000000000;
     return (toBytes(number) & mask) != mask;
 }
 
@@ -21,22 +21,22 @@ bool isInfinity(double number) {
     return ((toBytes(number) << 1) ^ 0xFFE0000000000000) == 0;
 }
 
-bool isPositive(float number) {
-    return (0x80000000 & toBytes(number)) == 0;
+bool isSigned(float number) {
+    return (0x80000000 & toBytes(number)) != 0;
 }
 
-bool isPositive(double number) {
-    return (0x8000000000000000 & toBytes(number)) == 0;
+bool isSigned(double number) {
+    return (0x8000000000000000 & toBytes(number)) != 0;
 }
 
 template <typename T>
 bool isPositiveInfinity(T number) {
-    return isPositive(number) && isInfinity(number);
+    return !isSigned(number) && isInfinity(number);
 }
 
 template <typename T>
 bool isNegativeInfinity(T number) {
-    return !isPositive(number) && isInfinity(number);
+    return isSigned(number) && isInfinity(number);
 }
 
 template <typename T>
@@ -46,12 +46,12 @@ bool isZero(T number) {
 
 template <typename T>
 bool isPositiveZero(T number) {
-    return isPositive(number) && isZero(number);
+    return !isSigned(number) && isZero(number);
 }
 
 template <typename T>
 bool isNegativeZero(T number) {
-    return !isPositive(number) && isZero(number);
+    return isSigned(number) && isZero(number);
 }
 
 bool isNaN(float number) {
@@ -97,11 +97,6 @@ bool isSubnormal(double number) {
 }
 
 template <typename T>
-bool isSigned(T number) {
-    return !isPositive(number);
-}
-
-template <typename T>
 int fpclassify(T number) {
     if (isInfinity(number)) return FP_INFINITE;
     if (isNaN(number)) return FP_NAN;
@@ -121,7 +116,5 @@ template bool isPositiveZero<float>(float);
 template bool isPositiveZero<double>(double);
 template bool isNegativeZero<float>(float);
 template bool isNegativeZero<double>(double);
-template bool isSigned<float>(float);
-template bool isSigned<double>(double);
 template int fpclassify<float>(float);
 template int fpclassify<double>(double);
