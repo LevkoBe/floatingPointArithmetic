@@ -17,6 +17,54 @@ static const std::array<double, 10> DOUBLE_TEST_VALUES = {
     std::nan("")
 };
 
+TEST(ClassificationTests, Infinities) {
+    EXPECT_TRUE(isPositiveInfinity(std::numeric_limits<float>::infinity()));
+    EXPECT_TRUE(isNegativeInfinity(-std::numeric_limits<float>::infinity()));
+    EXPECT_TRUE(isPositiveInfinity(std::numeric_limits<double>::infinity()));
+    EXPECT_TRUE(isNegativeInfinity(-std::numeric_limits<double>::infinity()));
+}
+
+TEST(ClassificationTests, Zeroes) {
+    EXPECT_TRUE(isPositiveZero(0.0f));
+	EXPECT_TRUE(isNegativeZero(-0.0f));
+    EXPECT_TRUE(isPositiveZero(0.0));
+	EXPECT_TRUE(isNegativeZero(-0.0));
+}
+
+TEST(ClassificationTests, IsNormalFloat) {
+    for (float value : FLOAT_TEST_VALUES) {
+        EXPECT_EQ(isNormal(value), std::isnormal(value));
+    }
+}
+
+TEST(ClassificationTests, IsNormalDouble) {
+    for (double value : DOUBLE_TEST_VALUES) {
+        EXPECT_EQ(isNormal(value), std::isnormal(value));
+    }
+}
+
+TEST(ClassificationTests, IsSubnormalFloat) {
+    for (float value : FLOAT_TEST_VALUES) {
+        if (std::fpclassify(value) == FP_SUBNORMAL) {
+            EXPECT_TRUE(isSubnormal(value));
+        }
+        else {
+            EXPECT_FALSE(isSubnormal(value));
+        }
+    }
+}
+
+TEST(ClassificationTests, IsSubnormalDouble) {
+    for (double value : DOUBLE_TEST_VALUES) {
+        if (std::fpclassify(value) == FP_SUBNORMAL) {
+            EXPECT_TRUE(isSubnormal(value));
+        }
+        else {
+            EXPECT_FALSE(isSubnormal(value));
+        }
+    }
+}
+
 TEST(ClassificationTests, IsFiniteFloat) {
     for (float value : FLOAT_TEST_VALUES) {
         EXPECT_EQ(isFinite(value), std::isfinite(value));
