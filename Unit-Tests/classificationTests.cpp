@@ -137,11 +137,11 @@ TEST(ClassificationTests, FpclassifyDouble) {
     }
 }
 
-// ~2.5 minutes to run
-//TEST(ConversionTests, BruteForceCheck) {
-//    uint32_t nu = 1;
-//    do {
-//        float floated = toFloat(nu);
-//        EXPECT_EQ(fpclassify(floated), std::fpclassify(floated));
-//    } while (++nu != 0);
-//}
+ // ~2.5 minutes to run
+TEST(ConversionTests, BruteForceClassificationCheck) {
+    uint32_t nu = 1;
+    do {
+        float floated = toFloat(nu);
+        EXPECT_EQ(fpclassify(floated), std::fpclassify(floated));
+    } while (++nu != 0);
+}

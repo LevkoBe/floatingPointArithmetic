@@ -45,10 +45,11 @@ TEST(ConversionTests, DoubleToBytesNaN) {
     EXPECT_TRUE(std::isnan(unbit));
 }
 
-//TEST(ConversionTests, BruteForceCheck) {
-//    uint32_t nu = 1;
-//    do {
-//        float floated = toFloat(nu);
-//        EXPECT_EQ(toBytes(floated), nu);
-//    } while (++nu != 0);
-//}
+// ~4 minutes to test
+TEST(ConversionTests, BruteForceConversionCheck) {
+    uint32_t nu = 1;
+    do {
+        float floated = toFloat(nu);
+        EXPECT_EQ(toBytes(floated), nu);
+    } while (++nu != 0);
+}
